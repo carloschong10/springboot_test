@@ -1,9 +1,8 @@
 package org.chong.test.springboot.app;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static  org.chong.test.springboot.app.Datos.*;
+import static org.chong.test.springboot.app.Datos.*;
 
 import org.chong.test.springboot.app.exceptions.DineroInsuficienteException;
 import org.chong.test.springboot.app.models.Banco;
@@ -75,6 +74,9 @@ class SpringbootTestApplicationTests {
 //        verify(bancoRepository).findById(1L);
         verify(bancoRepository, times(2)).findById(1L);
         verify(bancoRepository).update(any(Banco.class));
+
+        verify(cuentaRepository, times(6)).findById(anyLong()); //se llama en total 6 veces (3 del ID 1L y 3 del ID 2L)
+        verify(bancoRepository, never()).findAll();
     }
 
     @Test
@@ -112,6 +114,25 @@ class SpringbootTestApplicationTests {
 //        verify(bancoRepository).findById(1L);
         verify(bancoRepository, times(1)).findById(1L); //se llega a ejecutar 1 vez que es solo para la cuenta 1 y en debito se cae por la expcecion DineroInsuficienteException
         verify(bancoRepository, never()).update(any(Banco.class)); //y el update de bancoRepository nunca se ejecuta
+
+        verify(cuentaRepository, times(5)).findById(anyLong()); //se llama en total 6 veces (3 del ID 1L y 2 del ID 2L)
+        verify(bancoRepository, never()).findAll();
     }
 
+    @Test
+    void contextLoad3() {
+        when(cuentaRepository.findById(1L)).thenReturn(crearCuenta1());
+
+        Cuenta cuenta1 = cuentaService.findById(1L);
+        Cuenta cuenta2 = cuentaService.findById(1L);
+
+        //vamos a verificar que estas 2 instancias son las mismas para este método
+        assertSame(cuenta1, cuenta2);
+        assertTrue(cuenta1 == cuenta2);
+
+        assertEquals("Carlos", cuenta1.getPersona());
+        assertEquals("Carlos", cuenta2.getPersona());
+
+        verify(cuentaRepository, times(2)).findById(1L);
+    }
 }
