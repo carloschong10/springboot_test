@@ -75,14 +75,14 @@ class SpringbootTestApplicationTests {
 
         verify(cuentaRepository, times(3)).findById(1L);
         verify(cuentaRepository, times(3)).findById(2L);
-        verify(cuentaRepository, times(2)).update(any(Cuenta.class));
+        verify(cuentaRepository, times(2)).save(any(Cuenta.class));
 
         int total = cuentaService.revisarTotalTransferencias(1L);
         assertEquals(1, total);
 
 //        verify(bancoRepository).findById(1L);
         verify(bancoRepository, times(2)).findById(1L);
-        verify(bancoRepository).update(any(Banco.class));
+        verify(bancoRepository).save(any(Banco.class));
 
         verify(cuentaRepository, times(6)).findById(anyLong()); //se llama en total 6 veces (3 del ID 1L y 3 del ID 2L)
         verify(bancoRepository, never()).findAll();
@@ -118,11 +118,11 @@ class SpringbootTestApplicationTests {
 
         verify(cuentaRepository, times(3)).findById(1L);
         verify(cuentaRepository, times(2)).findById(2L); //se ejecuta 2 veces porque falla por el DineroInsuficienteException
-        verify(cuentaRepository, never()).update(any(Cuenta.class)); //y el update de cuentaRepository nunca se ejecuta
+        verify(cuentaRepository, never()).save(any(Cuenta.class)); //y el update de cuentaRepository nunca se ejecuta
 
 //        verify(bancoRepository).findById(1L);
         verify(bancoRepository, times(1)).findById(1L); //se llega a ejecutar 1 vez que es solo para la cuenta 1 y en debito se cae por la expcecion DineroInsuficienteException
-        verify(bancoRepository, never()).update(any(Banco.class)); //y el update de bancoRepository nunca se ejecuta
+        verify(bancoRepository, never()).save(any(Banco.class)); //y el update de bancoRepository nunca se ejecuta
 
         verify(cuentaRepository, times(5)).findById(anyLong()); //se llama en total 6 veces (3 del ID 1L y 2 del ID 2L)
         verify(bancoRepository, never()).findAll();
