@@ -13,6 +13,8 @@ import org.chong.test.springboot.app.services.CuentaService;
 import org.chong.test.springboot.app.services.CuentaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -20,16 +22,21 @@ import java.math.BigDecimal;
 @SpringBootTest
 class SpringbootTestApplicationTests {
 
+    @Mock
     CuentaRepository cuentaRepository;
+    @Mock
     BancoRepository bancoRepository;
 
-    CuentaService cuentaService;
+    @InjectMocks
+    CuentaServiceImpl cuentaService;
 
     @BeforeEach
     void setUp() {
+        /*
         cuentaRepository = mock(CuentaRepository.class);
         bancoRepository = mock(BancoRepository.class);
         cuentaService = new CuentaServiceImpl(cuentaRepository, bancoRepository);
+        */
 
         //reiniciamos los saldos que están como static en la clase Datos, para que el orden de los test no altere su funcionalidad, por ejm si les intercambiamos el nombre
         /*
