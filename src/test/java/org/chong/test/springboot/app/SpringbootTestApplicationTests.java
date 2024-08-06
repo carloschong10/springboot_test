@@ -3,6 +3,7 @@ package org.chong.test.springboot.app;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static  org.chong.test.springboot.app.Datos.*;
 
 import org.chong.test.springboot.app.exceptions.DineroInsuficienteException;
 import org.chong.test.springboot.app.models.Banco;
@@ -39,14 +40,15 @@ class SpringbootTestApplicationTests {
         */
 
         //otra forma y la mas recomendada es asignarlos a través de métodos staticos en la clase Datos, asi siempre va a llamar a una nueva instancia cada vez que se llame
+        //e importamos Datos de manera static para que ya llamemos a sus métodos staticos sin necesita de poner el nombre de la clase
     }
 
     @Test
     void contextLoads2() {
         //Given: Dado el contexto
-        when(cuentaRepository.findById(1L)).thenReturn(Datos.crearCuenta1());
-        when(cuentaRepository.findById(2L)).thenReturn(Datos.crearCuenta2());
-        when(bancoRepository.findById(1L)).thenReturn(Datos.crearBanco());
+        when(cuentaRepository.findById(1L)).thenReturn(crearCuenta1());
+        when(cuentaRepository.findById(2L)).thenReturn(crearCuenta2());
+        when(bancoRepository.findById(1L)).thenReturn(crearBanco());
 
         //When: Cuando invocamos los metodos de prueba del service, entonces realizamos la prueba
         BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);
@@ -78,9 +80,9 @@ class SpringbootTestApplicationTests {
     @Test
     void contextLoads() {
         //Given: Dado el contexto
-        when(cuentaRepository.findById(1L)).thenReturn(Datos.crearCuenta1());
-        when(cuentaRepository.findById(2L)).thenReturn(Datos.crearCuenta2());
-        when(bancoRepository.findById(1L)).thenReturn(Datos.crearBanco());
+        when(cuentaRepository.findById(1L)).thenReturn(crearCuenta1());
+        when(cuentaRepository.findById(2L)).thenReturn(crearCuenta2());
+        when(bancoRepository.findById(1L)).thenReturn(crearBanco());
 
         //When: Cuando invocamos los metodos de prueba del service, entonces realizamos la prueba
         BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);
