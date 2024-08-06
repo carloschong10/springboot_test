@@ -30,10 +30,15 @@ class SpringbootTestApplicationTests {
         cuentaRepository = mock(CuentaRepository.class);
         bancoRepository = mock(BancoRepository.class);
         cuentaService = new CuentaServiceImpl(cuentaRepository, bancoRepository);
+
+        //reiniciamos los saldos que están como static en la clase Datos, para que el orden de los test no altere su funcionalidad, por ejm si les intercambiamos el nombre
+        Datos.CUENTA1.setSaldo(new BigDecimal("1000"));
+        Datos.CUENTA2.setSaldo(new BigDecimal("2000"));
+        Datos.BANCO.setTotalTransferencias(0);
     }
 
     @Test
-    void contextLoads() {
+    void contextLoads2() {
         //Given: Dado el contexto
         when(cuentaRepository.findById(1L)).thenReturn(Datos.CUENTA1);
         when(cuentaRepository.findById(2L)).thenReturn(Datos.CUENTA2);
@@ -67,7 +72,7 @@ class SpringbootTestApplicationTests {
     }
 
     @Test
-    void contextLoads2() {
+    void contextLoads() {
         //Given: Dado el contexto
         when(cuentaRepository.findById(1L)).thenReturn(Datos.CUENTA1);
         when(cuentaRepository.findById(2L)).thenReturn(Datos.CUENTA2);
