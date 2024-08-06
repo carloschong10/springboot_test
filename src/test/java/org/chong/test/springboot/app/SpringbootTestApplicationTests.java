@@ -32,17 +32,21 @@ class SpringbootTestApplicationTests {
         cuentaService = new CuentaServiceImpl(cuentaRepository, bancoRepository);
 
         //reiniciamos los saldos que están como static en la clase Datos, para que el orden de los test no altere su funcionalidad, por ejm si les intercambiamos el nombre
+        /*
         Datos.CUENTA1.setSaldo(new BigDecimal("1000"));
         Datos.CUENTA2.setSaldo(new BigDecimal("2000"));
         Datos.BANCO.setTotalTransferencias(0);
+        */
+
+        //otra forma y la mas recomendada es asignarlos a través de métodos staticos en la clase Datos, asi siempre va a llamar a una nueva instancia cada vez que se llame
     }
 
     @Test
     void contextLoads2() {
         //Given: Dado el contexto
-        when(cuentaRepository.findById(1L)).thenReturn(Datos.CUENTA1);
-        when(cuentaRepository.findById(2L)).thenReturn(Datos.CUENTA2);
-        when(bancoRepository.findById(1L)).thenReturn(Datos.BANCO);
+        when(cuentaRepository.findById(1L)).thenReturn(Datos.crearCuenta1());
+        when(cuentaRepository.findById(2L)).thenReturn(Datos.crearCuenta2());
+        when(bancoRepository.findById(1L)).thenReturn(Datos.crearBanco());
 
         //When: Cuando invocamos los metodos de prueba del service, entonces realizamos la prueba
         BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);
@@ -74,9 +78,9 @@ class SpringbootTestApplicationTests {
     @Test
     void contextLoads() {
         //Given: Dado el contexto
-        when(cuentaRepository.findById(1L)).thenReturn(Datos.CUENTA1);
-        when(cuentaRepository.findById(2L)).thenReturn(Datos.CUENTA2);
-        when(bancoRepository.findById(1L)).thenReturn(Datos.BANCO);
+        when(cuentaRepository.findById(1L)).thenReturn(Datos.crearCuenta1());
+        when(cuentaRepository.findById(2L)).thenReturn(Datos.crearCuenta2());
+        when(bancoRepository.findById(1L)).thenReturn(Datos.crearBanco());
 
         //When: Cuando invocamos los metodos de prueba del service, entonces realizamos la prueba
         BigDecimal saldoOrigen = cuentaService.revisarSaldo(1L);

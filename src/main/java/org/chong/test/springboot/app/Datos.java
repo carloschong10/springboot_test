@@ -6,7 +6,21 @@ import org.chong.test.springboot.app.models.Cuenta;
 import java.math.BigDecimal;
 
 public class Datos {
+    /*
     public static final Cuenta CUENTA1 = new Cuenta(1L, "Carlos", new BigDecimal("1000"));
     public static final Cuenta CUENTA2 = new Cuenta(2L, "Noelia", new BigDecimal("2000"));
     public static final Banco BANCO = new Banco(1L, "Caja Sullana", 0);
+    */
+
+    public static Cuenta crearCuenta1() {
+        return new Cuenta(1L, "Carlos", new BigDecimal("1000"));
+    }
+
+    public static Cuenta crearCuenta2() {
+        return new Cuenta(2L, "Noelia", new BigDecimal("2000"));
+    }
+
+    public static Banco crearBanco() {
+        return new Banco(1L, "Caja Sullana", 0);
+    }
 }
