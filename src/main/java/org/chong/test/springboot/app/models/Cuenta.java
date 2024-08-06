@@ -1,11 +1,16 @@
 package org.chong.test.springboot.app.models;
 
+import jakarta.persistence.*;
 import org.chong.test.springboot.app.exceptions.DineroInsuficienteException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
+@Table(name = "cuentas")
 public class Cuenta {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String persona;
     private BigDecimal saldo;
@@ -59,7 +64,7 @@ public class Cuenta {
     public void debito(BigDecimal monto) {
         BigDecimal nuevoSaldo = this.saldo.subtract(monto);
 
-        if(nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
+        if (nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
             throw new DineroInsuficienteException("Dinero insuficiente en al cuenta");
         }
 
