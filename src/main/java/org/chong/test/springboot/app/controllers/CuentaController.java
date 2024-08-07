@@ -32,10 +32,10 @@ public class CuentaController {
         return cuentaService.findById(id);
     }
 
-    @PostMapping("/save")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Cuenta save(@RequestBody Cuenta cuenta) {
-        return null;
+        return cuentaService.save(cuenta);
     }
 
     @PostMapping("/transferir")
