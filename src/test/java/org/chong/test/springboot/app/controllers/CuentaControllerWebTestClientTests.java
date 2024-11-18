@@ -139,6 +139,7 @@ class CuentaControllerWebTestClientTests {
                 .expectBody(Cuenta.class)
                 .consumeWith(respuesta -> {
                     Cuenta cuenta = respuesta.getResponseBody();
+                    assertNotNull(cuenta);
                     assertEquals("Noelia", cuenta.getPersona());
                     assertEquals("2000.00", cuenta.getSaldo().toPlainString());
                 });
@@ -205,4 +206,48 @@ class CuentaControllerWebTestClientTests {
                 .value(hasSize(2));
     }
 
+    @Test
+    @Order(7)
+    void testGuardar() {
+        //given
+        Cuenta cuenta = new Cuenta(null, "Maria", new BigDecimal("3000"));
+        //when
+        webTestClient.post().uri("api/cuentas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(cuenta) //de forma automatica el bodyValue convierte cuenta en un json y lo envia al backend
+                .exchange()
+                //then
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(3)
+                .jsonPath("$.persona").isEqualTo("Maria")
+                .jsonPath("$.persona").value(is("Maria"))
+                .jsonPath("$.saldo").isEqualTo(3000);
+
+
+    }
+
+    @Test
+    @Order(8)
+    void testGuardar2() {
+        //given
+        Cuenta cuenta = new Cuenta(null, "Jackie", new BigDecimal("3500"));
+        //when
+        webTestClient.post().uri("api/cuentas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(cuenta) //de forma automatica el bodyValue convierte cuenta en un json y lo envia al backend
+                .exchange()
+                //then
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Cuenta.class)
+                .consumeWith(response -> {
+                    Cuenta c = response.getResponseBody();
+                    assertNotNull(c);
+                    assertEquals(4L, c.getId());
+                    assertEquals("Jackie", c.getPersona());
+                    assertEquals(new BigDecimal("3500"), c.getSaldo());
+                });
+    }
 }
