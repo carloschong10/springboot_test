@@ -12,10 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -161,4 +161,48 @@ class CuentaControllerWebTestClientTests {
                 .jsonPath("$.saldo").isEqualTo(900)
                 .json(objectMapper.writeValueAsString(cuenta));
     }
+
+    @Test
+    @Order(5)
+    void testListar() {
+        webTestClient.get().uri("api/cuentas").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$[0].persona").isEqualTo("Carlos")
+                .jsonPath("$[0].id").isEqualTo(1)
+                .jsonPath("$[0].saldo").isEqualTo(900)
+                .jsonPath("$[1].persona").isEqualTo("Noelia")
+                .jsonPath("$[1].id").isEqualTo(2)
+                .jsonPath("$[1].saldo").isEqualTo(2100)
+                .jsonPath("$").isArray()
+                .jsonPath("$").value(hasSize(2)); //para determinar el tamaño de nuestro arreglo
+
+    }
+
+    @Test
+    @Order(6)
+    void testListar2() {
+        webTestClient.get().uri("api/cuentas").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+//                .expectBody() //para utilizar le consumeWith debemos indicar acá el tipo de dato el cual deseamos esperar el resultado, por defecto es byte[] y cuando es byte[] utilizamos jsonPath, pero acá quiero obtener el resultado como una Lista de cuentas asi que usaremos .expectBodyList(Cuenta.class)
+                .expectBodyList(Cuenta.class)
+                .consumeWith(response -> {
+                    List<Cuenta> cuentas = response.getResponseBody();
+
+                    assert cuentas != null;
+                    assertNotNull(cuentas);
+                    assertEquals(2, cuentas.size());
+                    assertEquals(1L, cuentas.get(0).getId());
+                    assertEquals("Carlos", cuentas.get(0).getPersona());
+                    assertEquals("900.00", cuentas.get(0).getSaldo().toPlainString());
+                    assertEquals(2L, cuentas.get(1).getId());
+                    assertEquals("Noelia", cuentas.get(1).getPersona());
+                    assertEquals("2100.00", cuentas.get(1).getSaldo().toPlainString());
+                })
+                .hasSize(2)
+                .value(hasSize(2));
+    }
+
 }
