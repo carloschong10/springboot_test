@@ -119,7 +119,7 @@ class CuentaControllerWebTestClientTests {
         //Given
         Cuenta cuenta = new Cuenta(1L, "Carlos", new BigDecimal("1000"));
         //When
-        webTestClient.get().uri("api/cuentas/1").exchange() //con exchange realizamos el request
+        webTestClient.get().uri("/api/cuentas/1").exchange() //con exchange realizamos el request
                 // Then
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -133,7 +133,7 @@ class CuentaControllerWebTestClientTests {
     @Order(2)
     void testDetalle2() {
 
-        webTestClient.get().uri("api/cuentas/2").exchange() //con exchange realizamos el request
+        webTestClient.get().uri("/api/cuentas/2").exchange() //con exchange realizamos el request
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Cuenta.class)
@@ -153,7 +153,7 @@ class CuentaControllerWebTestClientTests {
         //Given
         Cuenta cuenta = new Cuenta(1L, "Carlos", new BigDecimal("900"));
         //When
-        webTestClient.get().uri("api/cuentas/1").exchange() //con exchange realizamos el request
+        webTestClient.get().uri("/api/cuentas/1").exchange() //con exchange realizamos el request
                 // Then
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -166,7 +166,7 @@ class CuentaControllerWebTestClientTests {
     @Test
     @Order(5)
     void testListar() {
-        webTestClient.get().uri("api/cuentas").exchange()
+        webTestClient.get().uri("/api/cuentas").exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
@@ -184,7 +184,7 @@ class CuentaControllerWebTestClientTests {
     @Test
     @Order(6)
     void testListar2() {
-        webTestClient.get().uri("api/cuentas").exchange()
+        webTestClient.get().uri("/api/cuentas").exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
 //                .expectBody() //para utilizar le consumeWith debemos indicar acá el tipo de dato el cual deseamos esperar el resultado, por defecto es byte[] y cuando es byte[] utilizamos jsonPath, pero acá quiero obtener el resultado como una Lista de cuentas asi que usaremos .expectBodyList(Cuenta.class)
@@ -212,7 +212,7 @@ class CuentaControllerWebTestClientTests {
         //given
         Cuenta cuenta = new Cuenta(null, "Maria", new BigDecimal("3000"));
         //when
-        webTestClient.post().uri("api/cuentas")
+        webTestClient.post().uri("/api/cuentas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(cuenta) //de forma automatica el bodyValue convierte cuenta en un json y lo envia al backend
                 .exchange()
@@ -234,7 +234,7 @@ class CuentaControllerWebTestClientTests {
         //given
         Cuenta cuenta = new Cuenta(null, "Jackie", new BigDecimal("3500"));
         //when
-        webTestClient.post().uri("api/cuentas")
+        webTestClient.post().uri("/api/cuentas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(cuenta) //de forma automatica el bodyValue convierte cuenta en un json y lo envia al backend
                 .exchange()
@@ -249,5 +249,27 @@ class CuentaControllerWebTestClientTests {
                     assertEquals("Jackie", c.getPersona());
                     assertEquals(new BigDecimal("3500"), c.getSaldo());
                 });
+    }
+
+    @Test
+    @Order(9)
+    void testEliminar() {
+        webTestClient.get().uri("/api/cuentas").exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Cuenta.class)
+                .hasSize(4);
+
+        webTestClient.delete().uri("/api/cuentas/3").exchange()
+                .expectStatus().isNoContent()
+                .expectBody().isEmpty();
+
+        webTestClient.get().uri("/api/cuentas").exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Cuenta.class)
+                .hasSize(3);
+
+        webTestClient.get().uri("/api/cuentas/3").exchange()
+                .expectStatus().is5xxServerError();
     }
 }
