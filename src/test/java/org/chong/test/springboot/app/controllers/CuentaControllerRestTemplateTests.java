@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -146,5 +147,30 @@ class CuentaControllerRestTemplateTests {
         assertEquals(3L, cuentaCreada.getId());
         assertEquals("Maria", cuentaCreada.getPersona());
         assertEquals("3800", cuentaCreada.getSaldo().toPlainString());
+    }
+
+    @Test
+    @Order(5)
+    void testEliminar() {
+        ResponseEntity<Cuenta[]> response = testRestTemplate.getForEntity(crearUri("/api/cuentas"), Cuenta[].class);
+        List<Cuenta> cuentas = Arrays.asList(response.getBody());
+        assertNotNull(cuentas);
+        assertEquals(3, cuentas.size());
+
+//        testRestTemplate.delete(crearUri("/api/cuentas/3")); //1ra forma de eliminar
+//        ResponseEntity<Void> exchange = testRestTemplate.exchange(crearUri("/api/cuentas/3"), HttpMethod.DELETE, null, Void.class);//los parametros de la ruta se pasan como un PathVarible con el mismo nombre del PathVariable del Controller pero tambien de forma directa
+        Map<String, Long> pathVariables = Map.of("id", 1L);
+        ResponseEntity<Void> exchange = testRestTemplate.exchange(crearUri("/api/cuentas/{id}"), HttpMethod.DELETE, null, Void.class, pathVariables); //para usarlo con PathVariable se usa con Maps
+        assertEquals(HttpStatus.NO_CONTENT, exchange.getStatusCode());
+        assertFalse(exchange.hasBody());
+
+        response = testRestTemplate.getForEntity(crearUri("/api/cuentas"), Cuenta[].class);
+        cuentas = Arrays.asList(response.getBody());
+        assertEquals(2, cuentas.size());
+
+        ResponseEntity<Cuenta> response2 = testRestTemplate.getForEntity(crearUri("/api/cuentas/3"), Cuenta.class);
+        assertEquals(HttpStatus.NOT_FOUND, response2.getStatusCode());
+        assertFalse(response2.hasBody());
+
     }
 }
