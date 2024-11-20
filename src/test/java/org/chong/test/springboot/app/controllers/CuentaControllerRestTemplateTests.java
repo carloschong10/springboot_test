@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,8 +86,8 @@ class CuentaControllerRestTemplateTests {
 
     }
 
-    @Order(2)
     @Test
+    @Order(2)
     void testDetalle() {
         ResponseEntity<Cuenta> response = testRestTemplate.getForEntity(crearUri("/api/cuentas/1"), Cuenta.class);
         Cuenta cuenta = response.getBody();
@@ -101,5 +103,33 @@ class CuentaControllerRestTemplateTests {
 
     private String crearUri(String uri) {
         return "http://localhost:" + puerto + uri;
+    }
+
+    @Test
+    @Order(3)
+    void testListar() throws JsonProcessingException {
+        ResponseEntity<Cuenta[]> response = testRestTemplate.getForEntity(crearUri("/api/cuentas"), Cuenta[].class);
+        List<Cuenta> cuentas = Arrays.asList(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+
+        assertNotNull(cuentas);
+        assertEquals(2, cuentas.size());
+        assertEquals(1L, cuentas.get(0).getId());
+        assertEquals("Carlos", cuentas.get(0).getPersona());
+        assertEquals("900.00", cuentas.get(0).getSaldo().toPlainString());
+        assertEquals(2L, cuentas.get(1).getId());
+        assertEquals("Noelia", cuentas.get(1).getPersona());
+        assertEquals("2100.00", cuentas.get(1).getSaldo().toPlainString());
+
+        JsonNode jsonNode = objectMapper.readTree(objectMapper.writeValueAsString(cuentas)); //convirtiendo un json de tipo String a un JsonNode para poder navegar en los atributos
+
+        assertEquals(1L, jsonNode.get(0).path("id").asLong());
+        assertEquals("Carlos", jsonNode.get(0).path("persona").asText());
+        assertEquals("900.0", jsonNode.get(0).path("saldo").asText());
+        assertEquals(2L, jsonNode.get(1).path("id").asLong());
+        assertEquals("Noelia", jsonNode.get(1).path("persona").asText());
+        assertEquals("2100.0", jsonNode.get(1).path("saldo").asText());
+
     }
 }
