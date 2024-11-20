@@ -132,4 +132,19 @@ class CuentaControllerRestTemplateTests {
         assertEquals("2100.0", jsonNode.get(1).path("saldo").asText());
 
     }
+
+    @Test
+    @Order(4)
+    void testGuardar() {
+        Cuenta cuenta = new Cuenta(null, "Maria", new BigDecimal("3800"));
+        ResponseEntity<Cuenta> response = testRestTemplate.postForEntity(crearUri("/api/cuentas"), cuenta, Cuenta.class); //el campo cuenta por default se envia como json en el request
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+        Cuenta cuentaCreada = response.getBody();
+//        assert cuentaCreada != null;
+        assertNotNull(cuentaCreada);
+        assertEquals(3L, cuentaCreada.getId());
+        assertEquals("Maria", cuentaCreada.getPersona());
+        assertEquals("3800", cuentaCreada.getSaldo().toPlainString());
+    }
 }
