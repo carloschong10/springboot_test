@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("integracion_rt")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CuentaControllerRestTemplateTests {
@@ -137,7 +138,7 @@ class CuentaControllerRestTemplateTests {
     @Test
     @Order(4)
     void testGuardar() {
-        Cuenta cuenta = new Cuenta(null, "Maria", new BigDecimal("3800"));
+        Cuenta cuenta = new Cuenta(null, "María", new BigDecimal("3800"));
         ResponseEntity<Cuenta> response = testRestTemplate.postForEntity(crearUri("/api/cuentas"), cuenta, Cuenta.class); //el campo cuenta por default se envia como json en el request
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
@@ -145,7 +146,7 @@ class CuentaControllerRestTemplateTests {
 //        assert cuentaCreada != null;
         assertNotNull(cuentaCreada);
         assertEquals(3L, cuentaCreada.getId());
-        assertEquals("Maria", cuentaCreada.getPersona());
+        assertEquals("María", cuentaCreada.getPersona());
         assertEquals("3800", cuentaCreada.getSaldo().toPlainString());
     }
 
@@ -156,9 +157,11 @@ class CuentaControllerRestTemplateTests {
         List<Cuenta> cuentas = Arrays.asList(response.getBody());
         assertNotNull(cuentas);
         assertEquals(3, cuentas.size());
+        assertEquals("María", cuentas.get(2).getPersona());
 
 //        testRestTemplate.delete(crearUri("/api/cuentas/3")); //1ra forma de eliminar
 //        ResponseEntity<Void> exchange = testRestTemplate.exchange(crearUri("/api/cuentas/3"), HttpMethod.DELETE, null, Void.class);//los parametros de la ruta se pasan como un PathVarible con el mismo nombre del PathVariable del Controller pero tambien de forma directa
+
         Map<String, Long> pathVariables = Map.of("id", 1L);
         ResponseEntity<Void> exchange = testRestTemplate.exchange(crearUri("/api/cuentas/{id}"), HttpMethod.DELETE, null, Void.class, pathVariables); //para usarlo con PathVariable se usa con Maps
         assertEquals(HttpStatus.NO_CONTENT, exchange.getStatusCode());
@@ -168,7 +171,7 @@ class CuentaControllerRestTemplateTests {
         cuentas = Arrays.asList(response.getBody());
         assertEquals(2, cuentas.size());
 
-        ResponseEntity<Cuenta> response2 = testRestTemplate.getForEntity(crearUri("/api/cuentas/3"), Cuenta.class);
+        ResponseEntity<Cuenta> response2 = testRestTemplate.getForEntity(crearUri("/api/cuentas/4"), Cuenta.class);
         assertEquals(HttpStatus.NOT_FOUND, response2.getStatusCode());
         assertFalse(response2.hasBody());
 

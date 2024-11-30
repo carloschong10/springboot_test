@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.*;
 
+@Tag("integracion_wtc")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class CuentaControllerWebTestClientTests {
